@@ -2,41 +2,59 @@ import Flutter
 import UIKit
 import AVFoundation
 
-public class SwiftFileaudioplayerPlugin: NSObject, FlutterPlugin, AVAudioPlayerDelegate {
+public class SwiftFileaudioplayerPlugin: NSObject, FlutterPlugin {
     
-    private var audioPlayer: AVAudioPlayer?
-    private var flutterResult: FlutterResult?
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "fileaudioplayer", binaryMessenger: registrar.messenger())
         let instance = SwiftFileaudioplayerPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-    
+
+    private var players : [String: Player] = [:];
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        flutterResult = result
+        //flutterResult = result
         
         let action = call.method
-        
-        if (action == "start") {
-            if (call.arguments != nil){
-                let url : String = call.arguments as! String
-                start(filePath : url)
+        guard let args = call.arguments else {
+            print("no args")
+            result(FlutterError(code: "-1", message: "no args", details: nil))
+            return
+        }
+        if let myArgs = args as? [String:Any],
+            let channel = myArgs["channel"] as? String {
+            let player = players[channel] ?? Player();
+            players[channel] = player
+
+            if (action == "start") {
+                if let url = myArgs["url"] as? String {
+                    player.start(filePath : url, result: result)
+                } else {
+                    print("no file")
+                    result(FlutterError(code: "-1", message: "no file", details: nil))
+                }
+            } else if (action == "stop") {
+                player.stop(result: result)
+            } else if (action == "pause") {
+                player.pause(result: result)
             } else {
-                print("no file")
-                self.flutterResult!(false)
+                player.resume(result: result)
             }
-        } else if (action == "stop") {
-            stop()
-        } else if (action == "pause") {
-            pause()
         } else {
-            resume()
+            result(FlutterError(code: "-1", message: "iOS could not extract " +
+                 "flutter arguments in method: (sendParams)", details: nil))
+            
         }
     }
-    
-    private func start(filePath: String){
+}
+
+public class Player:  NSObject, AVAudioPlayerDelegate {
+    private var audioPlayer: AVAudioPlayer?
+    private var flutterResult: FlutterResult?
+
+    public func start(filePath: String, result: @escaping FlutterResult){
         let url = URL(string: filePath)
+        flutterResult = result
         let avopts:AVAudioSession.CategoryOptions  = [
 		    .mixWithOthers,
 		    .duckOthers,
@@ -50,7 +68,12 @@ public class SwiftFileaudioplayerPlugin: NSObject, FlutterPlugin, AVAudioPlayerD
 
                 try audioPlayer = AVAudioPlayer(contentsOf: url!, fileTypeHint: AVFileType.wav.rawValue)
 
-		audioPlayer!.setVolume(1.0, fadeDuration:0)
+                if(audioPlayer == nil) {
+                    print("player is nil")
+                    self.flutterResult!(false)
+                }
+                
+                audioPlayer!.setVolume(1.0, fadeDuration:0)
                 audioPlayer!.delegate = self
 
                 audioPlayer!.play()
@@ -65,41 +88,43 @@ public class SwiftFileaudioplayerPlugin: NSObject, FlutterPlugin, AVAudioPlayerD
         
     }
     
-    private func stop(){
+    public func stop(result:FlutterResult){
         
         do {
             try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
             self.flutterResult!(true)
+            result(true)
         } catch {
             print("AVAudioSession stop error: \(error)")
             self.flutterResult!(false)
+            result(false)
         }
 	
 	audioPlayer?.stop()
         
     }
     
-    private func pause(){
+    public func pause(result:FlutterResult){
         audioPlayer?.pause()
         
         do {
             try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-            self.flutterResult!(true)
+            result(true)
         } catch {
             print("AVAudioSession pause error: \(error)")
-            self.flutterResult!(false)
+            result(false)
         }
         
     }
     
-    private func resume(){
+    public func resume(result:FlutterResult){
         
         do {
             try AVAudioSession.sharedInstance().setActive(true)
-            self.flutterResult!(true)
+            result(true)
         } catch {
             print("AVAudioSession resume error: \(error)")
-            self.flutterResult!(false)
+            result(false)
         }
 	audioPlayer?.play()
         
