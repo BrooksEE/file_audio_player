@@ -43,33 +43,33 @@ class FileAudioPlayer {
     }
   }
 
-  Future<void> start(String path) async {
+  Future<void> start(String path, [String channel='default']) async {
     try {
-      await _channel.invokeMethod("start", path);
+      await _channel.invokeMethod("start", {"url":path, "channel":channel});
     } on PlatformException catch (e) {
       print("Stream start error : $e");
     }
   }
 
-  Future<void> stop() async {
+  Future<void> stop([String channel='default']) async {
     try {
-      await _channel.invokeMethod("stop");
+      await _channel.invokeMethod("stop", {"channel":channel});
     } on PlatformException catch (e) {
       print("Stream stop error : $e");
     }
   }
 
-  Future<void> pause() async {
+  Future<void> pause([String channel='default']) async {
     try {
-      await _channel.invokeMethod("pause");
+      await _channel.invokeMethod("pause", {"channel":channel});
     } on PlatformException catch (e) {
       print("Stream pause error : $e");
     }
   }
 
-  Future<void> resume() async {
+  Future<void> resume([String channel='default']) async {
     try {
-      await _channel.invokeMethod("resume");
+      await _channel.invokeMethod("resume", {"channel":channel});
     } on PlatformException catch (e) {
       print("Stream resume error : $e");
     }
