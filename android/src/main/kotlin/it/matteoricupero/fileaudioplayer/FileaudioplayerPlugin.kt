@@ -216,7 +216,7 @@ public class FileaudioplayerPlugin : FlutterPlugin, MethodCallHandler {
         private fun afterException(e: Exception, result: Result?) {
             e.printStackTrace()
             abandonFocus()
-            result?.error(e.message, e.message, e.cause)
+            result?.error(e.message ?: "Error", e.message ?: "Error", e.cause ?: "")
         }
     }
 }
