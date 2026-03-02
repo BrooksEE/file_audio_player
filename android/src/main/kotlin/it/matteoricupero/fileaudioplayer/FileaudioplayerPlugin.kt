@@ -13,13 +13,10 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.IOException
 
 public class FileaudioplayerPlugin : FlutterPlugin, MethodCallHandler {
-
-    private lateinit var channel: MethodChannel
-
+    private lateinit var channel : MethodChannel
     private var players: HashMap<String, Player> = HashMap();
     private var audioFocusRequest: AudioFocusRequest? = null
 
@@ -36,14 +33,6 @@ public class FileaudioplayerPlugin : FlutterPlugin, MethodCallHandler {
         @JvmStatic
         var audioManager: AudioManager? = null
 
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "fileaudioplayer")
-
-            audioManager = registrar.activeContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
-            channel.setMethodCallHandler(FileaudioplayerPlugin())
-        }
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
