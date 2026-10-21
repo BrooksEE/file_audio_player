@@ -3,7 +3,7 @@ description: Demonstrates how to use the fileaudioplayer plugin.
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ^3.11.0
 
 dependencies:
   flutter:
