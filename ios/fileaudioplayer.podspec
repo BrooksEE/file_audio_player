@@ -13,7 +13,7 @@ Audio player for local files
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'fileaudioplayer/Sources/fileaudioplayer/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '15.0'
 

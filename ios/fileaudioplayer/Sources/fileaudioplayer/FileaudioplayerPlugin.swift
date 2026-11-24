@@ -2,12 +2,12 @@ import Flutter
 import UIKit
 import AVFoundation
 
-public class SwiftFileaudioplayerPlugin: NSObject, FlutterPlugin {
+public class FileaudioplayerPlugin: NSObject, FlutterPlugin {
     
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "fileaudioplayer", binaryMessenger: registrar.messenger())
-        let instance = SwiftFileaudioplayerPlugin()
+        let instance = FileaudioplayerPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
